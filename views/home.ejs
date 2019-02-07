@@ -3,7 +3,7 @@
     <h1>Home</h1>
     <p><%= startingContent %></p>
 
-      <% newPost.forEach(function(post) { %>
+      <% posts.forEach(function(post) { %>
       <h1> <%= post.title %> </h1>
       <p>
         <%= post.content.substring(0, 100) +"..." %>
