@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 mongoose.connect("mongodb://localhost:27017/blogDB", { useNewUrlParser: true });
+
 const postSchema = {
   title: String,
   content: String
@@ -24,14 +25,14 @@ const postSchema = {
 
 const Post = mongoose.model("Post", postSchema);
 
-const posts = []
-
 app.get("/", function(req, res){
   Post.find({}, function (err, posts){
-    res.render("home", {startingContent: homeStartingContent,
-                        posts: posts});
+    res.render("home", {
+      startingContent: homeStartingContent,
+      posts: posts
+    });
   })
-        });
+});
 
 app.get("/about", function(req, res){
   res.render("about", {about: aboutContent});
@@ -51,26 +52,22 @@ app.post("/compose", function(req, res){
     content: req.body.postBody
   });
 
-  post.save(function(error){
-    if(!err){
-      res.redirect("/");
-    }
-  });
+  posts.push(post);
+  res.redirect('/');
 
 })
 
 
-app.get("/posts/:posts", function(req, res) {
-    const requestedTitle = _.lowerCase(req.params.posts);
+app.get("/posts/:postId", function(req, res) {
+    const requestedPostId = req.params.postId;
 
-    posts.forEach(function(post) {
-      const storedTitle = _.lowerCase(post.title)
-      if (storedTitle === requestedTitle) {
-        res.render("post", {title:post.title,
-                            content:post.content})
-      }
-    })
-  })
+    Post.findOne({_id: requestedPostId}, function(err, post){
+      res.render("post", {
+        title: post.title,
+        content: post.content
+      });
+    });
+  });
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
